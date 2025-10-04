@@ -21,19 +21,21 @@ def upload_asset_file(path, name, description, asset_type):
         raise RuntimeError(f"ROBLOX_OWNER_ID no es un entero válido: {OWNER_ID}")
 
     # Construir creator correctamente
+# Determinar tipo e ID de creador
     if OWNER_TYPE.lower() == "user":
-        creator = {"userId": owner_id_int}
+        creator_type = "User"
     else:
-        creator = {"groupId": owner_id_int}
+        creator_type = "Group"
 
-    # payload de metadatos — incluí solo lo necesario
     request_payload = {
         "assetType": asset_type,
         "name": name,
         "displayName": name,
         "description": description,
-        "creator": creator
+        "creatorTargetId": int(OWNER_ID),
+        "creatorType": creator_type
     }
+
 
     print("DEBUG - request_payload:", json.dumps(request_payload))
 
@@ -82,6 +84,7 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
 
 
 
