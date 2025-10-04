@@ -1,6 +1,6 @@
 Pillow
 requests
-Flask
 fastapi
 datetime
-gunicorn
+uvicorn
+
