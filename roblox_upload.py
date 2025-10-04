@@ -18,6 +18,7 @@ def upload_asset_file(path, name, description, asset_type):
     request_payload = {
         "assetType": asset_type,
         "name": name,
+        "displayName": name,
         "description": description,
         "ownerId": OWNER_ID,
         "ownerType": OWNER_TYPE
@@ -62,6 +63,7 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
 
 
 
