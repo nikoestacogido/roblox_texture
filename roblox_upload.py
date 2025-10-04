@@ -2,7 +2,7 @@ import os
 import requests
 import time
 
-API_KEY = os.environ.get("ROBLOX_API_KEY")  # configura en Render
+API_KEY = os.environ.get("API_KEY")  # configura en Render
 OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")  # tu user id (o group id)
 OWNER_TYPE = os.environ.get("ROBLOX_OWNER_TYPE", "User")  # "User" o "Group"
 
@@ -34,7 +34,7 @@ def upload_asset_file(path, name, description, asset_type):
 
 def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
 
-    #Polling simple usando la Thumbnails API para saber si el thumbnail est· 'Completed' o 'Blocked'.
+    #Polling simple usando la Thumbnails API para saber si el thumbnail est√° 'Completed' o 'Blocked'.
     #No es 100% infalible, pero suele servir para detectar si fue bloqueado.
 
     t0 = time.time()
@@ -57,3 +57,4 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
