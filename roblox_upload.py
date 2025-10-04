@@ -3,7 +3,7 @@ import requests
 import json
 
 API_KEY = os.environ.get("API_KEY")
-OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")
+OWNER_ID = int(os.environ.get("ROBLOX_OWNER_ID"))
 OWNER_TYPE = os.environ.get("ROBLOX_OWNER_TYPE", "User")
 
 ASSETS_URL = "https://apis.roblox.com/assets/v1/assets"
@@ -68,6 +68,7 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
 
 
 
