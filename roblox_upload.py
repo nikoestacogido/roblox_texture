@@ -1,9 +1,9 @@
 import os
-import requests
 import json
+import requests
 
 API_KEY = os.environ.get("API_KEY")
-OWNER_ID = int(os.environ.get("ROBLOX_OWNER_ID"))
+OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")
 OWNER_TYPE = os.environ.get("ROBLOX_OWNER_TYPE", "User")
 
 ASSETS_URL = "https://apis.roblox.com/assets/v1/assets"
@@ -14,33 +14,47 @@ def upload_asset_file(path, name, description, asset_type):
 
     headers = {"x-api-key": API_KEY}
 
-    creator = {}
+    # aseguramos OWNER_ID como int si se puede
+    try:
+        owner_id_int = int(OWNER_ID)
+    except Exception:
+        raise RuntimeError(f"ROBLOX_OWNER_ID no es un entero válido: {OWNER_ID}")
+
+    # Construir creator correctamente
     if OWNER_TYPE.lower() == "user":
-        creator = {"userId": OWNER_ID}
-    
-    # El campo "request" debe ser un JSON string
+        creator = {"userId": owner_id_int}
+    else:
+        creator = {"groupId": owner_id_int}
+
+    # payload de metadatos — incluí solo lo necesario
     request_payload = {
         "assetType": asset_type,
         "name": name,
         "displayName": name,
         "description": description,
-        "ownerId": OWNER_ID,
-        "ownerType": OWNER_TYPE,
         "creator": creator
     }
 
-    with open(path, "rb") as f:
-        files = {
-            "request": (None, json.dumps(request_payload), "application/json"),
-            "fileContent": (os.path.basename(path), f, "image/png")
-        }
-        resp = requests.post(ASSETS_URL, headers=headers, files=files, timeout=60)
+    print("DEBUG - request_payload:", json.dumps(request_payload))
 
-    print("STATUS:", resp.status_code)
-    print("TEXT:", resp.text)
-    resp.raise_for_status()
+    with open(path, "rb") as f:
+        # enviar 'request' como campo de formulario, y el archivo en fileContent
+        data = {"request": json.dumps(request_payload)}
+        files = {"fileContent": (os.path.basename(path), f, "image/png")}
+        resp = requests.post(ASSETS_URL, headers=headers, data=data, files=files, timeout=120)
+
+    print("UPLOAD STATUS:", resp.status_code)
+    print("UPLOAD TEXT:", resp.text)
+
+    # si da error, devolvemos la info para debug (no solo raise)
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError:
+        # raise con info para logs
+        raise RuntimeError(f"Upload failed {resp.status_code}: {resp.text}")
 
     return resp.json()
+
 
 
 def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
@@ -68,6 +82,7 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
 
 
 
