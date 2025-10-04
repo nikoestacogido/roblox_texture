@@ -29,8 +29,8 @@ def upload_asset_file(path, name, description, asset_type):
     with open(path, "rb") as f:
         files = {"fileContent": (os.path.basename(path), f, "image/png")}
         resp = requests.post(ASSETS_URL, headers=headers, data=data, files=files, timeout=60)
-    print("STATUS:", response.status_code)
-    print("TEXT:", response.text)
+    print("STATUS:", resp.status_code)
+    print("TEXT:", resp.text)
     resp.raise_for_status()
     return resp.json()
 
@@ -59,5 +59,6 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
 
 
