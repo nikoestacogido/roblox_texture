@@ -1,0 +1,5 @@
+Pillow
+requests
+Flask
+fastapi
+datetime
