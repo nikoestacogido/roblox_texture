@@ -3,7 +3,7 @@ from datetime import datetime
 import time
 import os
 from fastapi import FastAPI, Request
-from roblox_upload import upload_asset_file
+from roblox_upload import upload_asset_file, wait_for_assetid
 
 makers = {
     "aspire" : "test",
@@ -212,10 +212,12 @@ async def generate_shirt(request: Request):
     #SUBIR A ROBLOX
     path = os.path.abspath("full_temp" + key + ".png")
     incoming_json = upload_asset_file(path, name = "aurelionshirt" + key, description = "gran esfuerzo", asset_type = "Decal")
-    print(incoming_json)
-    asset_id = incoming_json.get("assetId")
+    operation_id = incoming_json.get("operationId")
+    done = incoming_json.get("done")
+    #Funcion de esperar el assetid con el operation id
 
-
+    asset_id = wait_for_assetid(operation_id, 20, 5)
+    
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
