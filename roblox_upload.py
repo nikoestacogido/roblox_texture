@@ -32,9 +32,13 @@ def upload_asset_file(path, name, description, asset_type):
         "name": name,
         "displayName": name,
         "description": description,
-        "creatorTargetId": int(OWNER_ID),
-        "creatorType": creator_type
+        "creationContext": {
+            "creator": {
+                "userId": int(OWNER_ID)  # o groupId si OWNER_TYPE != "user"
+            }
+        }
     }
+
 
 
     print("DEBUG - request_payload:", json.dumps(request_payload))
@@ -84,6 +88,7 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
+
 
 
 
