@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import time
 
 API_KEY = os.environ.get("API_KEY")
 OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")
@@ -73,5 +74,5 @@ def wait_for_assetid(operation_id, max_tries : int, interval : int):
                 return asset_id
             else:
                 raise RuntimeError("Operación completada pero no se encontró 'assetId'")
-            time.sleep(delay)
-        raise TimeoutError("La operación no se completó dentro del tiempo esperado")
+        else:
+            time.sleep(interval)
