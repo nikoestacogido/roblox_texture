@@ -47,9 +47,9 @@ def create_shirt(model_name, badge_name, team_name, sponsor_name, patch_name, fa
 def create_front(fabric, model, badge, sponsor, patch, pattern, state):
     face_front = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
     #Resize
-    badge = badge.resize((25, 25))
+    badge = badge.resize((30, 30))
     patch = patch.resize((15, 15))
-    sponsor = sponsor.resize((60, 60))
+    sponsor = sponsor.resize((65, 65))
     
     #Layering
     face_front = Image.alpha_composite(face_front, fabric)
@@ -58,9 +58,9 @@ def create_front(fabric, model, badge, sponsor, patch, pattern, state):
     
     #Badge, sponsor and patch position
     temp_canva = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
-    temp_canva.paste(badge, (18, 20), badge)
+    temp_canva.paste(badge, (17, 19), badge)
     temp_canva.paste(patch, (56, 38), patch)
-    temp_canva.paste(sponsor, (34, 53), sponsor)
+    temp_canva.paste(sponsor, (32, 51), sponsor)
     face_front = Image.alpha_composite(face_front, temp_canva)
     
     #State layering
@@ -221,3 +221,4 @@ async def generate_shirt(request: Request):
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
+
