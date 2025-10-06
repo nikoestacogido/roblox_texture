@@ -7,7 +7,9 @@ from roblox_upload import upload_asset_file, wait_for_assetid
 
 makers = {
     "aspire" : "test",
-    "practice" : "test"
+    "practice" : "test",
+    "hoop" : "mantra",
+    "swift" : "mantra"
     }
 
 key = "none"
@@ -221,4 +223,5 @@ async def generate_shirt(request: Request):
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
+
 
