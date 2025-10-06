@@ -62,5 +62,16 @@ def upload_asset_file(path, name, description, asset_type):
 
 def wait_for_assetid(operation_id, max_tries : int, interval : int):
     headers = {"x-api-key": API_KEY}
+    for intento in range(max_tries):
+        resp = requests.get(ASSET_OPERATION_URL + operation_id, headers = headers, timeout = 30)
+        data = resp.json()
 
-#SEGUIR ESTA FUNCION
+        if data.get("done"):
+            asset_id = data.get("response", {}).get("assetId")
+            if asset_id:
+                print("ID del asset:", asset_id)
+                return asset_id
+            else:
+                raise RuntimeError("Operación completada pero no se encontró 'assetId'")
+            time.sleep(delay)
+        raise TimeoutError("La operación no se completó dentro del tiempo esperado")
