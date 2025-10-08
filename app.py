@@ -36,7 +36,7 @@ def create_shirt(model_name, badge_name, team_name, sponsor_name, patch_name, fa
     img_state = Image.open(f"assets/states/{state}.png").convert("RGBA")
     img_skin = Image.open(f"assets/skins/{skin_name}.png").convert("RGBA")
     
-    create_front(img_fabric , img_model , img_badge , img_sponsor , img_patch , img_pattern , img_state)
+    create_front(img_fabric , img_model , img_badge , img_sponsor , img_patch , img_pattern , img_state, img_skin)
     create_back(img_fabric, img_pattern, img_number, img_state)
     create_side(img_fabric, img_state)
     create_top(img_fabric, img_model_top, img_state)
@@ -46,14 +46,16 @@ def create_shirt(model_name, badge_name, team_name, sponsor_name, patch_name, fa
     create_arm_down(img_skin)
     create_arm_up(img_fabric, img_model_arm_up, img_state)
 
-def create_front(fabric, model, badge, sponsor, patch, pattern, state):
+def create_front(fabric, model, badge, sponsor, patch, pattern, state, skin):
     face_front = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
     #Resize
     badge = badge.resize((30, 30))
     patch = patch.resize((15, 15))
     sponsor = sponsor.resize((65, 65))
+    skin = size.resize((128, 128))
     
     #Layering
+    face_front = Image.alpha_composite(face_front, skin) #Hacer agujeros de skins?
     face_front = Image.alpha_composite(face_front, fabric)
     face_front = Image.alpha_composite(face_front, pattern)
     face_front = Image.alpha_composite(face_front, model)
@@ -223,5 +225,6 @@ async def generate_shirt(request: Request):
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
+
 
 
