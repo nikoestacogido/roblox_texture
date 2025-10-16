@@ -52,7 +52,7 @@ def create_front(fabric, model, badge, sponsor, patch, pattern, state, skin):
     badge = badge.resize((30, 30))
     patch = patch.resize((15, 15))
     sponsor = sponsor.resize((65, 65))
-    skin = size.resize((128, 128))
+    skin = skin.resize((128, 128))
     
     #Layering
     face_front = Image.alpha_composite(face_front, skin) #Hacer agujeros de skins?
@@ -225,6 +225,7 @@ async def generate_shirt(request: Request):
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
+
 
 
 
