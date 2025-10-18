@@ -220,11 +220,12 @@ async def generate_shirt(request: Request):
     done = incoming_json.get("done")
     #Funcion de esperar el assetid con el operation id
 
-    asset_id = wait_for_assetid(operation_id, 20, 5)
-    
+    internal_asset_id = wait_for_assetid(operation_id, 20, 5)
+    asset_id = geat_public_id(internal_asset_id, 20, 5)
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
+
 
 
 
