@@ -80,7 +80,7 @@ def wait_for_assetid(operation_id, max_tries : int, interval : int):
             time.sleep(interval)
 
 def geat_public_id(inter_id, max_tries : int, interval : int):
-    for intento in range(max_tres):
+    for intento in range(max_tries):
         resp = requests.get(
             "https://thumbnails.roblox.com/v1/assets",
             params={
@@ -97,5 +97,6 @@ def geat_public_id(inter_id, max_tries : int, interval : int):
                 return public_id
         time.sleep(interval)
     raise RuntimeError("No se pudo resolver el assetId público")
+
 
 
