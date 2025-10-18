@@ -68,6 +68,8 @@ def wait_for_assetid(operation_id, max_tries : int, interval : int):
         data = resp.json()
 
         if data.get("done"):
+            print("ESTO ES LO QUE DEVUELVE EL GUANPUDO")
+            print(data)
             asset_id = data.get("response", {}).get("assetId")
             if asset_id:
                 print("ID del asset:", asset_id)
@@ -76,3 +78,4 @@ def wait_for_assetid(operation_id, max_tries : int, interval : int):
                 raise RuntimeError("Operación completada pero no se encontró 'assetId'")
         else:
             time.sleep(interval)
+
