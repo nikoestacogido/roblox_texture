@@ -91,12 +91,15 @@ def geat_public_id(inter_id, max_tries : int, interval : int):
         )
         data = resp.json()
         if data.get("data"):
+            print("DICEN EL BOLUDO")
+            print(data.get("data"))
             public_id = data["data"][0].get("targetId")
             if public_id:
                 print("asset publico:", public_id)
                 return public_id
         time.sleep(interval)
     raise RuntimeError("No se pudo resolver el assetId público")
+
 
 
 
