@@ -3,7 +3,7 @@ from datetime import datetime
 import time
 import os
 from fastapi import FastAPI, Request
-from roblox_upload import upload_asset_file, wait_for_assetid
+from roblox_upload import upload_asset_file, wait_for_assetid, geat_public_id
 
 makers = {
     "aspire" : "test",
@@ -225,6 +225,7 @@ async def generate_shirt(request: Request):
     return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
+
 
 
 
