@@ -84,10 +84,11 @@ def geat_public_id(full_name):
     params = {
         "Keyword": full_name,
         "CreatorTargetId": OWNER_ID,
-        "Limit": 20,
+        "Limit": 10,
         "Category": 8,            # 8 = Decals (prueba)
         "includeNotForSale": "true"
     }
     response = requests.get(url, params = params, timeout = 30)
     response.raise_for_status()
     return response.json()
+
