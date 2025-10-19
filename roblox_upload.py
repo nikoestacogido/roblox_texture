@@ -79,27 +79,15 @@ def wait_for_assetid(operation_id, max_tries : int, interval : int):
         else:
             time.sleep(interval)
 
-def geat_public_id(inter_id, max_tries : int, interval : int):
-    for intento in range(max_tries):
-        resp = requests.get(
-            "https://thumbnails.roblox.com/v1/assets",
-            params={
-                "assetIds": inter_id,
-                "size": "420x420",
-                "format": "Png"
-            }
-        )
-        data = resp.json()
-        if data.get("data"):
-            print("DICEN EL BOLUDO")
-            print(data.get("data"))
-            public_id = data["data"][0].get("targetId")
-            if public_id:
-                print("asset publico:", public_id)
-                return public_id
-        time.sleep(interval)
-    raise RuntimeError("No se pudo resolver el assetId público")
-
-
-
-
+def geat_public_id(full_name):
+    url = "https://catalog.roblox.com/v1/search/items/details"
+    params = {
+        "Keyword": full_name,
+        "CreatorTargetId": OWNER_ID,
+        "Limit": 20,
+        "Category": 8,            # 8 = Decals (prueba)
+        "includeNotForSale": "true"
+    }
+    response = requests.get(url, params = params, timeout = 30)
+    response.raise_for_status()
+    return response.json()
