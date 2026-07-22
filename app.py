@@ -3,13 +3,11 @@ from datetime import datetime
 import time
 import os
 from fastapi import FastAPI, Request
-from roblox_upload import upload_asset_file, wait_for_assetid, geat_public_id
+from roblox_upload import upload_asset_file
 
 makers = {
     "aspire" : "test",
-    "practice" : "test",
-    "hoop" : "mantra",
-    "swift" : "mantra"
+    "practice" : "test"
     }
 
 key = "none"
@@ -36,7 +34,7 @@ def create_shirt(model_name, badge_name, team_name, sponsor_name, patch_name, fa
     img_state = Image.open(f"assets/states/{state}.png").convert("RGBA")
     img_skin = Image.open(f"assets/skins/{skin_name}.png").convert("RGBA")
     
-    create_front(img_fabric , img_model , img_badge , img_sponsor , img_patch , img_pattern , img_state, img_skin)
+    create_front(img_fabric , img_model , img_badge , img_sponsor , img_patch , img_pattern , img_state)
     create_back(img_fabric, img_pattern, img_number, img_state)
     create_side(img_fabric, img_state)
     create_top(img_fabric, img_model_top, img_state)
@@ -46,25 +44,23 @@ def create_shirt(model_name, badge_name, team_name, sponsor_name, patch_name, fa
     create_arm_down(img_skin)
     create_arm_up(img_fabric, img_model_arm_up, img_state)
 
-def create_front(fabric, model, badge, sponsor, patch, pattern, state, skin):
+def create_front(fabric, model, badge, sponsor, patch, pattern, state):
     face_front = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
     #Resize
-    badge = badge.resize((30, 30))
+    badge = badge.resize((25, 25))
     patch = patch.resize((15, 15))
-    sponsor = sponsor.resize((65, 65))
-    skin = skin.resize((128, 128))
+    sponsor = sponsor.resize((60, 60))
     
     #Layering
-    face_front = Image.alpha_composite(face_front, skin) #Hacer agujeros de skins?
     face_front = Image.alpha_composite(face_front, fabric)
     face_front = Image.alpha_composite(face_front, pattern)
     face_front = Image.alpha_composite(face_front, model)
     
     #Badge, sponsor and patch position
     temp_canva = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
-    temp_canva.paste(badge, (17, 19), badge)
+    temp_canva.paste(badge, (18, 20), badge)
     temp_canva.paste(patch, (56, 38), patch)
-    temp_canva.paste(sponsor, (32, 51), sponsor)
+    temp_canva.paste(sponsor, (34, 53), sponsor)
     face_front = Image.alpha_composite(face_front, temp_canva)
     
     #State layering
@@ -216,23 +212,10 @@ async def generate_shirt(request: Request):
     #SUBIR A ROBLOX
     path = os.path.abspath("full_temp" + key + ".png")
     incoming_json = upload_asset_file(path, name = "aurelionshirt" + key, description = "gran esfuerzo", asset_type = "Decal")
-    operation_id = incoming_json.get("operationId")
-    done = incoming_json.get("done")
-    #Funcion de esperar el assetid con el operation id
+    print(incoming_json)
+    asset_id = incoming_json.get("assetId")
 
-    internal_asset_id = wait_for_assetid(operation_id, 20, 5)
-    time.sleep(30)
-    catalog_response = geat_public_id("aurelionshirt" + key)
-    print(catalog_response)
-    
-    return {"status": "ok", "asset_id": 9090} #DEVOLVER EL ID del asset
+
+    return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
     time.sleep(3)
     clean_images(imgs_path)
-
-
-
-
-
-
-
-

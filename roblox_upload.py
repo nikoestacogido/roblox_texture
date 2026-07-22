@@ -1,96 +1,59 @@
 import os
-import json
 import requests
 import time
 
-API_KEY = os.environ.get("API_KEY")
-OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")
-OWNER_TYPE = os.environ.get("ROBLOX_OWNER_TYPE", "User")
+API_KEY = os.environ.get("ROBLOX_API_KEY")  # configura en Render
+OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")  # tu user id (o group id)
+OWNER_TYPE = os.environ.get("ROBLOX_OWNER_TYPE", "User")  # "User" o "Group"
 
 ASSETS_URL = "https://apis.roblox.com/assets/v1/assets"
-ASSET_OPERATION_URL = "https://apis.roblox.com/assets/v1/operations/"
+THUMBNAILS_URL = "https://thumbnails.roblox.com/v1/assets"
 
 def upload_asset_file(path, name, description, asset_type):
+
+    #Sube el archivo 'path' a la Open Cloud Assets API.
+    #Retorna el JSON devuelto por Roblox (imprimilo para ver el assetId exacto).
+
     if not API_KEY:
-        raise RuntimeError("Falta API_KEY en variables de entorno")
+        raise RuntimeError("Falta ROBLOX_API_KEY en variables de entorno")
 
     headers = {"x-api-key": API_KEY}
-
-    # aseguramos OWNER_ID como int si se puede
-    try:
-        owner_id_int = int(OWNER_ID)
-    except Exception:
-        raise RuntimeError(f"ROBLOX_OWNER_ID no es un entero válido: {OWNER_ID}")
-
-    # Construir creator correctamente
-# Determinar tipo e ID de creador
-    if OWNER_TYPE.lower() == "user":
-        creator_type = "User"
-    else:
-        creator_type = "Group"
-
-    request_payload = {
-        "assetType": asset_type,
+    data = {
+        "assetType": asset_type, 
         "name": name,
-        "displayName": name,
         "description": description,
-        "creationContext": {
-            "creator": {
-                "userId": int(OWNER_ID)  # o groupId si OWNER_TYPE != "user"
-            }
-        }
+        "ownerId": OWNER_ID,
+        "ownerType": OWNER_TYPE,
     }
-    
-    print("DEBUG - request_payload:", json.dumps(request_payload))
 
     with open(path, "rb") as f:
-        # enviar 'request' como campo de formulario, y el archivo en fileContent
-        data = {"request": json.dumps(request_payload)}
         files = {"fileContent": (os.path.basename(path), f, "image/png")}
-        resp = requests.post(ASSETS_URL, headers=headers, data=data, files=files, timeout=120)
-
-    print("UPLOAD STATUS:", resp.status_code)
-    print("UPLOAD TEXT:", resp.text)
-
-    # si da error, devolvemos la info para debug (no solo raise)
-    try:
-        resp.raise_for_status()
-    except requests.HTTPError:
-        # raise con info para logs
-        raise RuntimeError(f"Upload failed {resp.status_code}: {resp.text}")
-
+        resp = requests.post(ASSETS_URL, headers=headers, data=data, files=files, timeout=60)
+    resp.raise_for_status()
     return resp.json()
 
-def wait_for_assetid(operation_id, max_tries : int, interval : int):
-    headers = {"x-api-key": API_KEY}
-    for intento in range(max_tries):
-        resp = requests.get(ASSET_OPERATION_URL + operation_id, headers = headers, timeout = 30)
-        data = resp.json()
+def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
 
-        if data.get("done"):
-            print("ESTO ES LO QUE DEVUELVE EL GUANPUDO")
-            print(data)
-            asset_id = data.get("response", {}).get("assetId")
-            if asset_id:
-                print("ID del asset:", asset_id)
-                return asset_id
-            else:
-                raise RuntimeError("Operación completada pero no se encontró 'assetId'")
-        else:
-            time.sleep(interval)
+    #Polling simple usando la Thumbnails API para saber si el thumbnail est� 'Completed' o 'Blocked'.
+    #No es 100% infalible, pero suele servir para detectar si fue bloqueado.
 
-def geat_public_id(full_name):
-    url = "https://catalog.roblox.com/v1/search/items/details"
-    params = {
-        "Keyword": full_name,
-        "CreatorTargetId": OWNER_ID,
-        "CreatorType": "User",
-        "Limit": 10,
-        "Category": 8,            # 8 = Decals (prueba)
-        "includeNotForSale": "true"
-    }
-    response = requests.get(url, params = params, timeout = 30)
-    response.raise_for_status()
-    return response.json()
-
-
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        params = {
+            "assetIds": str(asset_id),
+            "returnPolicy": "PlaceHolder",
+            "size": "420x420",
+            "format": "Png",
+            "isCircular": "false"
+        }
+        r = requests.get(THUMBNAILS_URL, params=params, timeout=20)
+        if r.status_code == 200:
+            data = r.json().get("data", [])
+            if data:
+                state = data[0].get("state")  # e.g. "Completed", "Blocked", "Pending"
+                if state == "Completed":
+                    return {"status": "ok", "state": state}
+                if state == "Blocked":
+                    return {"status": "blocked", "state": state}
+        time.sleep(poll_interval)
+    return {"status": "timeout"}
