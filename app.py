@@ -7,7 +7,9 @@ from roblox_upload import upload_asset_file
 
 makers = {
     "aspire" : "test",
-    "practice" : "test"
+    "practice" : "test",
+    "hoop" : "mantra",
+    "swift" : "mantra"
     }
 
 key = "none"
