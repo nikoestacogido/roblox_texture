@@ -214,10 +214,6 @@ async def generate_shirt(request: Request):
     #SUBIR A ROBLOX
     path = os.path.abspath("full_temp" + key + ".png")
     incoming_json = upload_asset_file(path, name = "aurelionshirt" + key, description = "gran esfuerzo", asset_type = "Decal")
-    print(incoming_json)
     asset_id = incoming_json.get("assetId")
-
-
-    return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
-    time.sleep(3)
     clean_images(imgs_path)
+    return {"status": "ok", "asset_id": asset_id} #DEVOLVER EL ID del asset
