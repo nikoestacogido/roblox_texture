@@ -1,6 +1,7 @@
 import os
 import requests
 import time
+import json
 
 API_KEY = os.environ.get("ROBLOX_API_KEY")  # configura en Render
 OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")  # tu user id (o group id)
