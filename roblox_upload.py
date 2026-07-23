@@ -44,4 +44,5 @@ def upload_asset_file(path, name, description, asset_type):
         }
         resp = requests.post(ASSETS_URL, headers=headers, files=files, timeout=60)
     resp.raise_for_status()
-    return wait_for_asset_id(resp.get("operationId"))
+    op = resp.json()
+    return wait_for_asset_id(op.get("operationId"))
