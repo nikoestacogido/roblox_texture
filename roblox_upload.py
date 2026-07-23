@@ -58,10 +58,10 @@ def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
         if r.status_code == 200:
             data = r.json().get("data", [])
             if data:
-                state = data[0].get("state")  # e.g. "Completed", "Blocked", "Pending"
-                if state == "Completed":
+                state = data[0].get("done")
+                if state == True:
                     return {"status": "ok", "state": state}
-                if state == "Blocked":
+                if not state:
                     return {"status": "blocked", "state": state}
         time.sleep(poll_interval)
     return {"status": "timeout"}
