@@ -29,12 +29,14 @@ def upload_asset_file(path, name, description, asset_type):
     with open(path, "rb") as f:
         files = {"fileContent": (os.path.basename(path), f, "image/png")}
         resp = requests.post(ASSETS_URL, headers=headers, data=data, files=files, timeout=60)
+    print(resp.status_code)
+    print(resp.text)
     resp.raise_for_status()
     return resp.json()
 
 def wait_for_asset_moderation(asset_id, timeout=300, poll_interval=5):
 
-    #Polling simple usando la Thumbnails API para saber si el thumbnail est· 'Completed' o 'Blocked'.
+    #Polling simple usando la Thumbnails API para saber si el thumbnail est√° 'Completed' o 'Blocked'.
     #No es 100% infalible, pero suele servir para detectar si fue bloqueado.
 
     t0 = time.time()
