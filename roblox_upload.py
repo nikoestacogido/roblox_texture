@@ -6,10 +6,11 @@ API_KEY = os.environ.get("ROBLOX_API_KEY")  # configura en Render
 OWNER_ID = os.environ.get("ROBLOX_OWNER_ID")  # tu user id (o group id)
 OWNER_TYPE = os.environ.get("ROBLOX_OWNER_TYPE", "User")  # "User" o "Group"
 ASSETS_URL = "https://apis.roblox.com/assets/v1/assets"
+OPERATION_URL = "https://apis.roblox.com/assets/v1/operations"
 THUMBNAILS_URL = "https://thumbnails.roblox.com/v1/assets"
 
 def wait_for_asset_id(operationid, timeout = 120):
-    url = f"{ASSETS_URL}/operations/{operationid}"
+    url = f"{OPERATION_URL}/{operationid}"
     start = time.time()
     headers = {"x-api-key": API_KEY}
     while True:
