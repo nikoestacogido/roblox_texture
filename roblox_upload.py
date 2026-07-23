@@ -18,17 +18,23 @@ def upload_asset_file(path, name, description, asset_type):
         raise RuntimeError("Falta ROBLOX_API_KEY en variables de entorno")
 
     headers = {"x-api-key": API_KEY}
-    data = {
+    request = {
         "assetType": asset_type, 
-        "name": name,
+        "displayName": name,
         "description": description,
-        "ownerId": OWNER_ID,
-        "ownerType": OWNER_TYPE,
+        "creationContext" : {
+            "creator" : {
+                "userId" : str(OWNER_ID)
+            }
+        }
     }
 
     with open(path, "rb") as f:
-        files = {"fileContent": (os.path.basename(path), f, "image/png")}
-        resp = requests.post(ASSETS_URL, headers=headers, data=data, files=files, timeout=60)
+        files = {
+            "request" : (None, json.dumps(request), "application/json"),
+            "fileContent" : (os.path.basename(path), f, "image/png")
+        }
+        resp = requests.post(ASSETS_URL, headers=headers, files=files, timeout=60)
     print(resp.text)
     resp.raise_for_status()
     return resp.json()
